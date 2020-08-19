@@ -208,6 +208,7 @@ type Viper struct {
 	properties *properties.Properties
 
 	onConfigChange func(fsnotify.Event)
+	onConfigRemove func(fsnotify.Event)
 }
 
 // New returns an initialized Viper instance.
@@ -326,6 +327,11 @@ func (v *Viper) OnConfigChange(run func(in fsnotify.Event)) {
 	v.onConfigChange = run
 }
 
+func OnConfigRemove(run func(in fsnotify.Event)) { v.OnConfigRemove(run) }
+func (v *Viper) OnConfigRemove(run func(in fsnotify.Event)) {
+	v.onConfigRemove = run
+}
+
 func WatchConfig() { v.WatchConfig() }
 
 func (v *Viper) WatchConfig() {
@@ -377,6 +383,9 @@ func (v *Viper) WatchConfig() {
 						}
 					} else if filepath.Clean(event.Name) == configFile &&
 						event.Op&fsnotify.Remove&fsnotify.Remove != 0 {
+						if v.onConfigRemove != nil {
+							v.onConfigRemove(event)
+						}
 						eventsWG.Done()
 						return
 					}
