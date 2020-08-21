@@ -9,12 +9,13 @@ import (
 
 	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/hcl/hcl/printer"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/magiconair/properties"
 	"github.com/pelletier/go-toml"
 	"github.com/spf13/afero"
 	"github.com/subosito/gotenv"
 	"gopkg.in/ini.v1"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 var SupportedParsers map[string]Parser
@@ -53,10 +54,10 @@ type JSONParser struct {
 func (pp *JSONParser) UnmarshalReader(v *Viper, in io.Reader, c map[string]interface{}) error {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(in)
-	return json.Unmarshal(buf.Bytes(), &c)
+	return jsoniter.Unmarshal(buf.Bytes(), &c)
 }
 func (pp *JSONParser) MarshalWriter(v *Viper, f afero.File, c map[string]interface{}) error {
-	b, err := json.MarshalIndent(c, "", "  ")
+	b, err := jsoniter.MarshalIndent(c, "", "  ")
 	if err != nil {
 		return err
 	}
