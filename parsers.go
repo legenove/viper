@@ -2,6 +2,7 @@ package viper
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -59,7 +60,7 @@ func (pp *JSONParser) UnmarshalReader(v *Viper, in io.Reader, c map[string]inter
 	return jsoniter.Unmarshal(buf.Bytes(), &c)
 }
 func (pp *JSONParser) MarshalWriter(v *Viper, f afero.File, c map[string]interface{}) error {
-	b, err := jsoniter.MarshalIndent(c, "", "  ")
+	b, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -176,7 +177,7 @@ func (pp *HCLParser) UnmarshalReader(v *Viper, in io.Reader, c map[string]interf
 	return nil
 }
 func (pp *HCLParser) MarshalWriter(v *Viper, f afero.File, c map[string]interface{}) error {
-	b, err := jsoniter.Marshal(c)
+	b, err := json.Marshal(c)
 	if err != nil {
 		return err
 	}
