@@ -1830,6 +1830,13 @@ func (v *Viper) getConfigFile() (string, error) {
 
 func (v *Viper) searchInPath(in string) (filename string) {
 	jww.DEBUG.Println("Searching for config in ", in)
+	if exts, ok  := SupportedExts[v.configType]; ok {
+		for _, ext := range exts {
+			if b, _ := exists(v.fs, filepath.Join(in, v.configName+"."+ext)); b {
+				return filepath.Join(in, v.configName+"."+ext)
+			}
+		}
+	}
 	for ext := range SupportedParsers {
 		jww.DEBUG.Println("Checking for", filepath.Join(in, v.configName+"."+ext))
 		if b, _ := exists(v.fs, filepath.Join(in, v.configName+"."+ext)); b {

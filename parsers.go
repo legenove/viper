@@ -18,6 +18,7 @@ import (
 )
 
 var SupportedParsers map[string]Parser
+var SupportedExts map[string][]string
 
 type Parser interface {
 	UnmarshalReader(v *Viper, in io.Reader, c map[string]interface{}) error // Unmarshal a Reader into a map.
@@ -28,11 +29,13 @@ type Parser interface {
 func AddParser(parser Parser, names ...string) {
 	for _, n := range names {
 		SupportedParsers[n] = parser
+		SupportedExts[n] = names
 	}
 }
 
 func parserInit() {
 	SupportedParsers = make(map[string]Parser, 32)
+	SupportedExts = make(map[string][]string, 32)
 	AddParser(&JSONParser{}, "json")
 	AddParser(&TOMLParser{}, "toml")
 	AddParser(&YAMLParser{}, "yaml", "yml")
